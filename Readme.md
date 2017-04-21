@@ -15,9 +15,9 @@ changes made:</br>
    simulate a real device transmitting data.
 
 
-Notice: This repo is a part of a bigger project which also involves an IoT dashboard app created for iPhones. If you are   interested in knowing more about the entire project archicture, visit this link:</br>
+Notice: This repo is a part of a bigger project which also involves an IoT dashboard app created for iPhones. 
+Need access to the app source code?</br>
+https://github.com/virajpadte/awsIoTAppDashBoard
+
+If you are   interested in knowing more about the entire project archicture, visit this link:</br>
 page is under-construction
-
-
- Need access to the app source code?</br>
- https://github.com/virajpadte/awsIoTAppDashBoard
