@@ -13,3 +13,11 @@ changes made:</br>
 (this is just to make the code more generic)</br>
 2] The subscribe function is not called as I just need to publish data at specific time intervals to
    simulate a real device transmitting data.
+
+
+Notice: This repo is a part of a bigger project which also involves an IoT dashboard app created for iPhones. If you are   interested in knowing more about the entire project archicture, visit this link:</br>
+page is under-construction
+
+
+ Need access to the app source code?</br>
+ https://github.com/virajpadte/awsIoTAppDashBoard
