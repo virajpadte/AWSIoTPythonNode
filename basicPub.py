@@ -50,21 +50,22 @@ def customCallback(client, userdata, message):
 
 def getattributes(data_file, index):
     data = json.load(data_file)
-    DataID = str(data["data"][index][0])
+    DataID = str(index)
     Reading = str(data["data"][index][12])
     Cost = str(data["data"][index][13])
     Month = str(data["data"][index][15])
+    if len(Month) == 1:
+        Month = "0"+Month
     Year = str(data["data"][index][16])
-    Date = "1/"+Month+"/"+Year
-    Location = data["data"][index][9]
-    return DataID,Date,Reading,Cost,Location
+    CreatedAt = Year+"-"+Month+"-"+"01"
+    Place = data["data"][index][9]
+    return DataID,CreatedAt,Reading,Cost,Place
 
 #Generating message from meassage attributes:
-def getPayload(index, filename):
-    NodeID = "node1_elec"
+def getPayload(index, filename, clientID):
     with open(filename) as data_file:
-        DataID,Date,Reading,Cost,Location = getattributes(data_file, index)
-        jsonPayload = json.dumps({'NodeID': NodeID, 'DataID': DataID, 'Date': Date, 'Reading': Reading, 'Cost': Cost, "location": Location})
+        DataID,CreatedAt,Reading,Cost,Location = getattributes(data_file, index)
+        jsonPayload = json.dumps({'NodeID': clientID, 'DataID': DataID, 'CreatedAt': CreatedAt, 'Reading': Reading, 'Cost': Cost, "Place": Location})
         return jsonPayload
 
 def usageNConfig():
@@ -72,10 +73,7 @@ def usageNConfig():
     usageInfo = """Usage:
 
 	Use certificate based mutual authentication:
-	python basicPubSub.py -e <endpoint> -r <rootCAFilePath> -c <certFilePath> -k <privateKeyFilePath>
-
-	Use MQTT over WebSocket:
-	python basicPubSub.py -e <endpoint> -r <rootCAFilePath> -w
+	python basicPubSub.py -e <endpoint> -r <rootCAFilePath> -c <certFilePath> -k <privateKeyFilePath> -t <topicname> -cl <clientID> -f <fileName>
 
 	Type "python basicPubSub.py -h" for available options.
 	"""
@@ -88,8 +86,6 @@ def usageNConfig():
 		Certificate file path
 	-k, --key
 		Private key file path
-	-w, --websocket
-		Use MQTT over WebSocket
 	-t, --topicName
 		Use to specify the topic to be used for publishing or subscribing
 	-cl, --clientID
@@ -192,17 +188,17 @@ def usageNConfig():
     myAWSIoTMQTTClient.configureDrainingFrequency(2)  # Draining: 2 Hz
     myAWSIoTMQTTClient.configureConnectDisconnectTimeout(10)  # 10 sec
     myAWSIoTMQTTClient.configureMQTTOperationTimeout(5)  # 5 sec
-    return myAWSIoTMQTTClient,topicName, fileName
+    return myAWSIoTMQTTClient,topicName, fileName, clientID
 
-def transmit(mqttclient,topic, datafile):
+def transmit(mqttclient,topic, datafile, clientID):
     # Connect and subscribe to AWS IoT
     mqttclient.connect()
     #myAWSIoTMQTTClient.subscribe("energy/SNode1_1", 1, customCallback)
     time.sleep(2)
     # Publish to the same topic in a loop forever
     loopCount = 0
-    while loopCount<1:
-        mqttclient.publish(topic, getPayload(loopCount, datafile), 1)
+    while loopCount<289:
+        mqttclient.publish(topic, getPayload(loopCount, datafile, clientID), 1)
         loopCount += 1
         time.sleep(1)
     #myAWSIoTMQTTClient.unsubscribe("energy/SNode1_1")
@@ -211,8 +207,8 @@ def transmit(mqttclient,topic, datafile):
 
 
 def main():
-    mqttclient,topic, datafile = usageNConfig()
-    transmit(mqttclient,topic, datafile)
+    mqttclient,topic, datafile, clientID = usageNConfig()
+    transmit(mqttclient,topic, datafile, clientID)
 if __name__ == "__main__": main()
 
 
